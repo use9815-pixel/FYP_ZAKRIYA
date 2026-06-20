@@ -25,8 +25,11 @@ app.use(cors({
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 
+import os from "os";
+
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, "uploads");
+const isVercel = process.env.VERCEL || process.env.VERCEL_ENV;
+const uploadsDir = isVercel ? path.join(os.tmpdir(), "uploads") : path.join(__dirname, "uploads");
 try {
   await fs.mkdir(uploadsDir, { recursive: true });
 } catch {
@@ -47,7 +50,7 @@ if (!groqApiKey) {
 }
 
 const openai = new OpenAI({
-  apiKey: groqApiKey,
+  apiKey: groqApiKey || "missing_key",
   baseURL: "https://api.groq.com/openai/v1"
 });
 
