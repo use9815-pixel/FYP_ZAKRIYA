@@ -5,8 +5,5 @@
     "api/**/*.js": {
       "maxDuration": 60
     }
-  },
-  "env": {
-    "GROQ_API_KEY": "@GROQ_API_KEY"
   }
 }
