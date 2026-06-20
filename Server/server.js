@@ -20,7 +20,21 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "https://fyp-zakriya-2ulv.vercel.app/"
+  origin: function (origin, callback) {
+    const clientOrigin = process.env.CLIENT_ORIGIN;
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (clientOrigin && origin === clientOrigin) {
+      return callback(null, true);
+    }
+    if (origin === 'http://localhost:5173' || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    callback(null, true); // For development, you can allow all or customize this further
+  },
+  credentials: true
 }));
 app.use(express.json());
 app.use('/api/auth', authRoutes);
