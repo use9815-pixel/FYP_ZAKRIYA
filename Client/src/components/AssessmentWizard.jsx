@@ -10,8 +10,8 @@ import ResultsStep from './ResultsStep.jsx';
 
 const API_BASE_URLS = [
   import.meta.env.VITE_BACKEND_API_URL,
-  import.meta.env.DEV ? 'http://localhost:5000/api' : null,
-  import.meta.env.DEV ? 'http://localhost:5001/api' : null,
+  import.meta.env.DEV ? 'https://fyp-zakriya.vercel.app/api' : null,
+  import.meta.env.DEV ? 'https://fyp-zakriya.vercel.app/api' : null,
   !import.meta.env.DEV && typeof window !== 'undefined' ? `${window.location.origin}/api` : null,
   'https://career-guide-ai-tau.vercel.app/api'
 ].filter(Boolean);
