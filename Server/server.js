@@ -191,5 +191,9 @@ function startServer(port) {
   return server;
 }
 
-startServer(START_PORT);
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  startServer(START_PORT);
+}
+
+export default app;
 
