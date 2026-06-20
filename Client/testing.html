@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Parallel Sorting Algorithms: Merge Sort vs Quick Sort | Benchmark & Visualization</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            margin: 0;
+            padding: 20px;
+            color: #1e2a3e;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 600;
+            font-size: 2.2rem;
+            margin-bottom: 0.2em;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #4a627a;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #cbd5e1;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 8px;
+        }
+
+        .controls {
+            background: white;
+            border-radius: 28px;
+            padding: 20px 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4b6e8a;
+        }
+
+        input, select, button {
+            padding: 10px 16px;
+            font-size: 1rem;
+            border-radius: 60px;
+            border: 1px solid #cbd5e6;
+            background: #fefefe;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44,110,158,0.2);
+        }
+
+        button {
+            background: #1e4663;
+            color: white;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 24px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background: #0f3552;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .benchmark-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 20px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 6px solid;
+            padding-left: 16px;
+        }
+
+        .merge-title { border-left-color: #3b82f6; }
+        .quick-title { border-left-color: #ef4444; }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 20px 0;
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 24px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 20px;
+            padding: 8px 16px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #5b6e8c;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e2e8f0;
+            border-radius: 40px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .speedup {
+            background: #d9f0e1;
+            color: #11734c;
+        }
+
+        .visual-area {
+            background: #0f172a;
+            border-radius: 24px;
+            padding: 8px;
+            margin-top: 16px;
+            max-height: 280px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .array-bars {
+            display: flex;
+            align-items: flex-end;
+            height: 160px;
+            gap: 2px;
+            padding: 8px;
+        }
+
+        .bar {
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+            width: 6px;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.05s linear;
+            display: inline-block;
+        }
+
+        .sorted-info {
+            text-align: center;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            color: #94a3b8;
+            font-family: monospace;
+        }
+
+        .status {
+            text-align: center;
+            font-weight: 500;
+            margin-top: 20px;
+            padding: 12px;
+            background: #fef9e3;
+            border-radius: 60px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: #5c6f87;
+        }
+
+        @media (max-width: 780px) {
+            .benchmark-grid { grid-template-columns: 1fr; }
+            .controls { flex-direction: column; align-items: stretch; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⚡ Parallel Sorting · Divide & Conquer</h1>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span class="badge">🧵 Web Workers (true parallelism)</span>
+        <span class="badge">🔄 Merge Sort vs Quick Sort</span>
+        <span class="badge">📊 Thread Sync + Concurrency</span>
+    </div>
+
+    <div class="controls">
+        <div class="input-group">
+            <label>🎲 Array Size</label>
+            <input type="number" id="arraySize" value="20000" step="1000" min="1000" max="80000">
+        </div>
+        <div class="input-group">
+            <label>⚙️ Parallel Threshold (min size for parallel)</label>
+            <input type="number" id="threshold" value="2500" step="500" min="200" max="15000">
+        </div>
+        <div class="input-group">
+            <label>📈 Random Seed</label>
+            <button id="randomizeBtn">🔄 Generate New Array</button>
+        </div>
+        <div class="input-group">
+            <label>🏁 Run Benchmark</label>
+            <button id="runBenchmarkBtn">🚀 Compare All Algorithms</button>
+        </div>
+    </div>
+
+    <div class="benchmark-grid">
+        <!-- MERGE SORT CARD -->
+        <div class="card">
+            <h2 class="merge-title">📚 Merge Sort</h2>
+            <div class="stats">
+                <div class="stat"><div class="stat-label">Normal (ms)</div><div class="stat-value" id="normalMergeTime">—</div></div>
+                <div class="stat"><div class="stat-label">Parallel (ms)</div><div class="stat-value" id="parallelMergeTime">—</div></div>
+                <div class="stat"><div class="stat-label">🚀 Speedup</div><div class="stat-value" id="mergeSpeedup">—</div></div>
+            </div>
+            <div class="visual-area">
+                <div id="mergeNormalViz" class="array-bars" style="height: 120px;"></div>
+                <div class="sorted-info">⬆️ Normal merge sort (first 200 elements preview)</div>
+            </div>
+            <div class="visual-area" style="margin-top: 12px;">
+                <div id="mergeParallelViz" class="array-bars" style="height: 120px;"></div>
+                <div class="sorted-info">⚡ Parallel merge sort preview</div>
+            </div>
+        </div>
+
+        <!-- QUICK SORT CARD -->
+        <div class="card">
+            <h2 class="quick-title">⚡ Quick Sort</h2>
+            <div class="stats">
+                <div class="stat"><div class="stat-label">Normal (ms)</div><div class="stat-value" id="normalQuickTime">—</div></div>
+                <div class="stat"><div class="stat-label">Parallel (ms)</div><div class="stat-value" id="parallelQuickTime">—</div></div>
+                <div class="stat"><div class="stat-label">🚀 Speedup</div><div class="stat-value" id="quickSpeedup">—</div></div>
+            </div>
+            <div class="visual-area">
+                <div id="quickNormalViz" class="array-bars" style="height: 120px;"></div>
+                <div class="sorted-info">⬆️ Normal quick sort preview</div>
+            </div>
+            <div class="visual-area" style="margin-top: 12px;">
+                <div id="quickParallelViz" class="array-bars" style="height: 120px;"></div>
+                <div class="sorted-info">⚡ Parallel quick sort preview</div>
+            </div>
+        </div>
+    </div>
+    <div id="statusMsg" class="status">✅ Ready. Adjust size, threshold & generate random array, then click benchmark.</div>
+</div>
+<footer>🧠 Concept: Divide & Conquer + True Parallelism via Web Workers. Synchronization using Promises & worker termination pool.</footer>
+
+<script>
+    (function(){
+        // ---------- DOM elements ----------
+        const arraySizeInput = document.getElementById('arraySize');
+        const thresholdInput = document.getElementById('threshold');
+        const randomizeBtn = document.getElementById('randomizeBtn');
+        const runBtn = document.getElementById('runBenchmarkBtn');
+        
+        const normalMergeSpan = document.getElementById('normalMergeTime');
+        const parallelMergeSpan = document.getElementById('parallelMergeTime');
+        const mergeSpeedupSpan = document.getElementById('mergeSpeedup');
+        
+        const normalQuickSpan = document.getElementById('normalQuickTime');
+        const parallelQuickSpan = document.getElementById('parallelQuickTime');
+        const quickSpeedupSpan = document.getElementById('quickSpeedup');
+        
+        const statusDiv = document.getElementById('statusMsg');
+        
+        // visualization containers
+        const mergeNormalViz = document.getElementById('mergeNormalViz');
+        const mergeParallelViz = document.getElementById('mergeParallelViz');
+        const quickNormalViz = document.getElementById('quickNormalViz');
+        const quickParallelViz = document.getElementById('quickParallelViz');
+        
+        // current random array (original)
+        let currentRawArray = [];
+        
+        // Helper: generate random integer array
+        function generateRandomArray(size) {
+            const arr = new Array(size);
+            for(let i = 0; i < size; i++) {
+                arr[i] = Math.floor(Math.random() * 10000);
+            }
+            return arr;
+        }
+        
+        // Initial array generation
+        function refreshArray() {
+            const size = Math.min(parseInt(arraySizeInput.value) || 20000, 120000);
+            currentRawArray = generateRandomArray(size);
+            statusDiv.innerHTML = `🔄 New random array generated (size=${currentRawArray.length.toLocaleString()}). Ready for benchmark.`;
+            // show mini preview of unsorted array for reference? not needed.
+        }
+        
+        // Helper: visualize first N elements as bar graph (show small sample)
+        function renderMiniBars(containerId, arr, maxBars = 140) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const sample = arr.slice(0, maxBars);
+            const maxVal = Math.max(...sample, 1);
+            container.innerHTML = '';
+            for(let val of sample) {
+                const height = (val / maxVal) * 70 + 8; // min 8px
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${height}px`;
+                bar.style.width = '5px';
+                bar.style.backgroundColor = '#3b82f6';
+                container.appendChild(bar);
+            }
+        }
+        
+        // ----- Normal Sorting (blocking, in main thread) -----
+        function normalMergeSort(arr) {
+            if(arr.length <= 1) return arr;
+            const mid = Math.floor(arr.length / 2);
+            const left = normalMergeSort(arr.slice(0, mid));
+            const right = normalMergeSort(arr.slice(mid));
+            return merge(left, right);
+        }
+        
+        function merge(left, right) {
+            let result = [], i=0, j=0;
+            while(i < left.length && j < right.length) {
+                if(left[i] <= right[j]) result.push(left[i++]);
+                else result.push(right[j++]);
+            }
+            return result.concat(left.slice(i)).concat(right.slice(j));
+        }
+        
+        function normalQuickSort(arr) {
+            if(arr.length <= 1) return arr;
+            const pivot = arr[arr.length-1];
+            const left = [], right = [];
+            for(let i=0; i<arr.length-1; i++) {
+                if(arr[i] < pivot) left.push(arr[i]);
+                else right.push(arr[i]);
+            }
+            return [...normalQuickSort(left), pivot, ...normalQuickSort(right)];
+        }
+        
+        // ---------- PARALLEL SORT USING WEB WORKERS (TRUE CONCURRENCY) ----------
+        // We'll create a worker pool concept: each parallel sort spawns workers dynamically.
+        // For Merge Sort Parallel: divide array into chunks, sort each chunk in parallel worker, then merge (but typical parallel merge sort: recursively split until threshold, then sequential)
+        // Implementation: parallelMergeSort that uses a threshold: if length <= parallelThreshold => sequential merge sort, else split & run two workers in parallel.
+        // Similarly for QuickSort: parallel quicksort, each partition can be done in parallel workers.
+        
+        // Worker code as Blob (embedded)
+        const workerCodeBlob = `
+            // worker script: receives {type, arr, threshold, isMergeSort? etc}
+            function sequentialMergeSort(arr) {
+                if(arr.length <= 1) return arr;
+                const mid = Math.floor(arr.length/2);
+                const left = sequentialMergeSort(arr.slice(0,mid));
+                const right = sequentialMergeSort(arr.slice(mid));
+                return merge(left, right);
+            }
+            function merge(left,right){
+                let res=[], i=0,j=0;
+                while(i<left.length && j<right.length){
+                    if(left[i]<=right[j]) res.push(left[i++]);
+                    else res.push(right[j++]);
+                }
+                return res.concat(left.slice(i)).concat(right.slice(j));
+            }
+            function sequentialQuickSort(arr){
+                if(arr.length<=1) return arr;
+                const pivot=arr[arr.length-1];
+                const left=[], right=[];
+                for(let i=0;i<arr.length-1;i++){
+                    if(arr[i]<=pivot) left.push(arr[i]);
+                    else right.push(arr[i]);
+                }
+                return [...sequentialQuickSort(left), pivot, ...sequentialQuickSort(right)];
+            }
+            
+            self.onmessage = function(e) {
+                const { type, arr, threshold } = e.data;
+                if(type === 'mergeSortParallelTask') {
+                    // if size <= threshold do sequential merge sort
+                    let result;
+                    if(arr.length <= threshold) {
+                        result = sequentialMergeSort(arr);
+                    } else {
+                        const mid = Math.floor(arr.length/2);
+                        const leftArr = arr.slice(0,mid);
+                        const rightArr = arr.slice(mid);
+                        // For parallel deeper, but worker cannot spawn easily without messaging overhead. Instead we simulate recursion by returning? Simplify: For true parallel we will use iterative splitting in main thread, but to show concept: we sort sub arrays in workers recursively.
+                        // We'll do simpler but effective: worker creates two sub-workers? not possible. So better: in main driver we use top-level parallel recursion: for each parallel region we spawn worker for each half. This is implemented in main thread orchestration.
+                        // In worker as helper for chunk: just sort a given chunk sequential or a chunk parallel? We'll use worker only to sort a single contiguous block (non recursive deeper) to keep sync. Actually typical approach: at top level, recursively call parallel merge sort, when split -> create two workers, each worker does merge sort on half (with threshold). That's exactly what we implement in driver.
+                    }
+                    // simplified: worker just does sequential for any given array (no spawning). The true parallel is managed by driver that invokes multiple workers concurrently.
+                    const sorted = sequentialMergeSort(arr);
+                    self.postMessage({ sorted });
+                } 
+                else if(type === 'quickSortParallelTask') {
+                    const sorted = sequentialQuickSort(arr);
+                    self.postMessage({ sorted });
+                }
+            };
+        `;
+        
+        const workerUrl = URL.createObjectURL(new Blob([workerCodeBlob], {type: 'application/javascript'}));
+        
+        // helper: parallel sort for a given array using workers (generic)
+        async function parallelSortWithWorkers(arr, sortType, threshold) {
+            // sortType: "merge" or "quick"
+            if(arr.length <= threshold) {
+                // sequential fallback
+                if(sortType === "merge") return normalMergeSort(arr);
+                else return normalQuickSort(arr);
+            }
+            // split into two halves (divide & conquer parallel)
+            const mid = Math.floor(arr.length / 2);
+            const leftPart = arr.slice(0, mid);
+            const rightPart = arr.slice(mid);
+            
+            // create two workers to sort each half in parallel
+            const workerLeft = new Worker(workerUrl);
+            const workerRight = new Worker(workerUrl);
+            
+            const leftPromise = new Promise((resolve) => {
+                workerLeft.onmessage = (e) => { resolve(e.data.sorted); workerLeft.terminate(); };
+                workerLeft.postMessage({ type: sortType === "merge" ? 'mergeSortParallelTask' : 'quickSortParallelTask', arr: leftPart, threshold });
+            });
+            const rightPromise = new Promise((resolve) => {
+                workerRight.onmessage = (e) => { resolve(e.data.sorted); workerRight.terminate(); };
+                workerRight.postMessage({ type: sortType === "merge" ? 'mergeSortParallelTask' : 'quickSortParallelTask', arr: rightPart, threshold });
+            });
+            
+            const [leftSorted, rightSorted] = await Promise.all([leftPromise, rightPromise]);
+            
+            // merge (if merge sort) or for QuickSort? For quickSort after partition left/right we need combine: leftSorted + pivot + rightSorted? But in quickSort partition depends on pivot selection. Wait, we cannot split randomly in quickSort without pivot. So scheme separate: For parallel quickSort we adapt "parallel quick sort" by picking pivot, partition the array, then recursively sort left and right partitions in parallel. More accurate.
+            // Since we are splitting half arbitrary for merge but quickSort splitting must follow pivot order. Let's implement a more accurate parallel quick sort: using pivot to divide array into leftLess and rightGreater, then parallel sort each using workers.
+            if(sortType === "merge") {
+                return merge(leftSorted, rightSorted);
+            } else { // quicksort: but we splitted by index, that is not correct pivot partition. So we reimplement parallel quick sort correctly:
+                // We'll re-run parallel quick using pivot partition scheme: but we already called parallel on halves incorrectly. Let's adjust: for quick sort we use different logic: use pivot to partition into two lists then recurse.
+                // For better correctness, we rewrite parallelQuickSort as separate async function that uses pivot partition then parallel workers.
+                // However inside this generic, we detect and call better implementation.
+                return await parallelQuickSortCorrect(arr, threshold);
+            }
+        }
+        
+        // Correct Parallel Quick Sort implementation using pivot & worker concurrency
+        async function parallelQuickSortCorrect(arr, threshold) {
+            if(arr.length <= threshold) return normalQuickSort(arr);
+            const pivot = arr[Math.floor(Math.random() * arr.length)];
+            const left = [];
+            const right = [];
+            for(let i = 0; i < arr.length; i++) {
+                if(arr[i] < pivot) left.push(arr[i]);
+                else if(arr[i] > pivot) right.push(arr[i]);
+                // equal: push to left or right arbitrarily, but balanced kept.
+                else {
+                    if(left.length <= right.length) left.push(arr[i]);
+                    else right.push(arr[i]);
+                }
+            }
+            // Parallel sort left and right
+            const workerLeft = new Worker(workerUrl);
+            const workerRight = new Worker(workerUrl);
+            const leftPromise = new Promise((resolve) => {
+                workerLeft.onmessage = (e) => { resolve(e.data.sorted); workerLeft.terminate(); };
+                workerLeft.postMessage({ type: 'quickSortParallelTask', arr: left, threshold: 0 });
+            });
+            const rightPromise = new Promise((resolve) => {
+                workerRight.onmessage = (e) => { resolve(e.data.sorted); workerRight.terminate(); };
+                workerRight.postMessage({ type: 'quickSortParallelTask', arr: right, threshold: 0 });
+            });
+            const leftSorted = await leftPromise;
+            const rightSorted = await rightPromise;
+            return [...leftSorted, pivot, ...rightSorted];
+        }
+        
+        // Parallel Merge Sort proper using workers (recursive with concurrency)
+        async function parallelMergeSortAsync(arr, threshold) {
+            if(arr.length <= threshold) return normalMergeSort(arr);
+            const mid = Math.floor(arr.length / 2);
+            const leftPart = arr.slice(0, mid);
+            const rightPart = arr.slice(mid);
+            const workerLeft = new Worker(workerUrl);
+            const workerRight = new Worker(workerUrl);
+            const leftPromise = new Promise((resolve) => {
+                workerLeft.onmessage = (e) => { resolve(e.data.sorted); workerLeft.terminate(); };
+                workerLeft.postMessage({ type: 'mergeSortParallelTask', arr: leftPart, threshold });
+            });
+            const rightPromise = new Promise((resolve) => {
+                workerRight.onmessage = (e) => { resolve(e.data.sorted); workerRight.terminate(); };
+                workerRight.postMessage({ type: 'mergeSortParallelTask', arr: rightPart, threshold });
+            });
+            const [leftSorted, rightSorted] = await Promise.all([leftPromise, rightPromise]);
+            return merge(leftSorted, rightSorted);
+        }
+        
+        // Run benchmark
+        async function runBenchmark() {
+            const size = parseInt(arraySizeInput.value);
+            const threshold = parseInt(thresholdInput.value);
+            if(isNaN(size) || size < 100) {
+                statusDiv.innerHTML = "❌ Invalid size";
+                return;
+            }
+            if(currentRawArray.length !== size) refreshArray();
+            const testArray = [...currentRawArray];
+            statusDiv.innerHTML = "⏳ Running benchmarks (normal vs parallel) - using Web Workers...";
+            
+            // 1) Normal Merge Sort
+            let start = performance.now();
+            const normalMergeResult = normalMergeSort([...testArray]);
+            let normalMergeTime = performance.now() - start;
+            
+            // 2) Parallel Merge Sort
+            start = performance.now();
+            const parallelMergeResult = await parallelMergeSortAsync([...testArray], threshold);
+            let parallelMergeTime = performance.now() - start;
+            
+            // 3) Normal Quick Sort
+            start = performance.now();
+            const normalQuickResult = normalQuickSort([...testArray]);
+            let normalQuickTime = performance.now() - start;
+            
+            // 4) Parallel Quick Sort (correct pivot parallel)
+            start = performance.now();
+            const parallelQuickResult = await parallelQuickSortCorrect([...testArray], threshold);
+            let parallelQuickTime = performance.now() - start;
+            
+            // Update UI stats
+            normalMergeSpan.innerText = normalMergeTime.toFixed(2) + " ms";
+            parallelMergeSpan.innerText = parallelMergeTime.toFixed(2) + " ms";
+            const mergeSpeedupVal = (normalMergeTime / parallelMergeTime).toFixed(2);
+            mergeSpeedupSpan.innerText = mergeSpeedupVal + "x";
+            
+            normalQuickSpan.innerText = normalQuickTime.toFixed(2) + " ms";
+            parallelQuickSpan.innerText = parallelQuickTime.toFixed(2) + " ms";
+            const quickSpeedupVal = (normalQuickTime / parallelQuickTime).toFixed(2);
+            quickSpeedupSpan.innerText = quickSpeedupVal + "x";
+            
+            // Visualize samples (sorted arrays)
+            renderMiniBars('mergeNormalViz', normalMergeResult, 120);
+            renderMiniBars('mergeParallelViz', parallelMergeResult, 120);
+            renderMiniBars('quickNormalViz', normalQuickResult, 120);
+            renderMiniBars('quickParallelViz', parallelQuickResult, 120);
+            
+            statusDiv.innerHTML = `✅ Benchmark complete. Merge Speedup: ${mergeSpeedupVal}x, Quick Speedup: ${quickSpeedupVal}x. Threshold: ${threshold}`;
+        }
+        
+        randomizeBtn.addEventListener('click', () => {
+            refreshArray();
+            // optional clear visualization temporary
+            mergeNormalViz.innerHTML = '<div style="color:white">—</div>';
+            mergeParallelViz.innerHTML = '<div style="color:white">—</div>';
+            quickNormalViz.innerHTML = '<div style="color:white">—</div>';
+            quickParallelViz.innerHTML = '<div style="color:white">—</div>';
+        });
+        
+        runBtn.addEventListener('click', async () => {
+            await runBenchmark();
+        });
+        
+        // initial array
+        refreshArray();
+    })();
+</script>
+</body>
+</html>
