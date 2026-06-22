@@ -57,6 +57,7 @@ function HistoryPage() {
           <div className="header-links">
             <Link to="/" className="button ghost">Website</Link>
             <Link to="/assessment" className="button primary">New Assessment</Link>
+            <button className="button danger" onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}>Logout</button>
           </div>
         </div>
         <p>Previously generated AI career guidance reports.</p>

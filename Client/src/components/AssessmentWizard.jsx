@@ -389,6 +389,7 @@ function AssessmentWizard() {
           <div className="header-links">
             <Link to="/" className="button ghost">Website</Link>
             <Link to="/history" className="button ghost">History</Link>
+            <button className="button danger" onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }}>Logout</button>
           </div>
         </div>
         <p>Smart career counselor for personalized guidance, marksheet analysis, and professional recommendations.</p>

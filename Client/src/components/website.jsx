@@ -113,6 +113,9 @@ export default function CareerGuideAI() {
           {/* CTA */}
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <button onClick={() => navigate('/history')} style={{ fontSize: 14, color: "#475569", fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "6px 12px" }}>My Reports</button>
+            {localStorage.getItem('token') && (
+              <button onClick={() => { localStorage.removeItem('token'); navigate('/login'); }} style={{ fontSize: 14, color: "#ef4444", fontWeight: 500, background: "none", border: "none", cursor: "pointer", padding: "6px 12px" }}>Logout</button>
+            )}
             <button onClick={openAssessmentFlow} style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)", color: "#fff", fontWeight: 700, fontSize: 14, padding: "10px 20px", borderRadius: 10, border: "none", cursor: "pointer", boxShadow: "0 4px 14px rgba(79,70,229,0.35)", transition: "transform .2s, box-shadow .2s" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "scale(1.04)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(79,70,229,0.45)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(79,70,229,0.35)"; }}>
