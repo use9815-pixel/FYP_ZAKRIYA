@@ -28,7 +28,7 @@ app.use(cors({
     if (clientOrigin && origin === clientOrigin) {
       return callback(null, true);
     }
-    if (origin === 'http://localhost:5173' || origin.endsWith('.vercel.app')) {
+    if (origin === 'http://localhost:5173' || origin === 'https://fyp-project-321.vercel.app' || origin === 'https://fyp-project-321.vercel.app/') {
       return callback(null, true);
     }
     
